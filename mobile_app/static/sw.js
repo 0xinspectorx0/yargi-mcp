@@ -1,14 +1,18 @@
-const CACHE_NAME = 'yargi-mcp-v1';
+const CACHE_NAME = 'yargi-mcp-v2';
 const STATIC_ASSETS = [
   '/',
+  '/index.html',
+  '/style.css',
+  '/app.js',
+  '/manifest.json',
+  '/icons/favicon.png',
+  '/icons/icon-192.png',
+  '/icons/icon-512.png',
+  '/icons/icon.svg',
+  '/icons/apple-touch-icon.png',
   '/static/style.css',
   '/static/app.js',
-  '/static/manifest.json',
-  '/static/icons/favicon.png',
-  '/static/icons/icon-192.png',
-  '/static/icons/icon-512.png',
-  '/static/icons/icon.svg',
-  '/static/icons/apple-touch-icon.png'
+  '/static/manifest.json'
 ];
 
 self.addEventListener('install', (event) => {
@@ -67,7 +71,6 @@ self.addEventListener('fetch', (event) => {
         return networkResponse;
       });
     }).catch(() => {
-      // Offline fallback for navigation requests
       if (event.request.mode === 'navigate') {
         return caches.match('/');
       }
