@@ -45,6 +45,27 @@ Bu proje, çeşitli Türk hukuk kaynaklarına (Yargıtay, Danıştay, Emsal Kara
 }
 ```
 
+### 📱 Mobil Cihazlarda Kullanım (Mobil Web & PWA)
+
+Yargı MCP'yi telefon ve tabletlerinizde yerel uygulama deneyimiyle kullanabilirsiniz:
+
+#### 1. Mobil Web Arayüzü (PWA - Kurulumsuz)
+Sunucuyu başlattığınızda (`python run_asgi.py` veya ASGI servisi), mobil tarayıcınızdan doğrudan erişebilirsiniz:
+* **🚀 Vercel ile Canlıya Alın:** Projede Vercel yapılandırması hazırdır (`vercel.json`, `api/index.py` ve `requirements.txt`). Ücretsiz olarak tek tıkla `https://projeniz.vercel.app` adresinde yayınlayabilirsiniz. Detaylar için [Vercel Dağıtım Rehberi](docs/VERCEL_DEPLOYMENT.md).
+* **iOS (iPhone/iPad - Safari):** Sayfayı açın, alttaki **Paylaş** simgesine dokunun ve **"Ana Ekrana Ekle"** seçeneğini seçin. Artık ana ekranınızdaki simgeye tıklayarak reklamsız ve tam ekran mobil uygulama olarak kullanabilirsiniz.
+* **Android (Google Chrome):** Sayfayı açın, sağ üstteki üç noktaya dokunup **"Ana Ekrana Ekle"** veya **"Uygulamayı Yükle"** butonuna basın.
+* **Öne Çıkan Mobil Özellikler:**
+  * ⚖️ 11 Türk yargı merciinde (Yargıtay, Danıştay, AYM, KİK, Sayıştay, UYAP Emsal vb.) hızlı filtreli arama
+  * 📖 Gece modu, ayarlanabilir yazı boyutu ve hukuk serif fontu içeren kitap formatında okuyucu
+  * 🤖 **AI Karar Analizi & Özeti:** Kararın dava konusu, hukuki uyuşmazlığı ve hüküm gerekçesini tek dokunuşla özetleme
+  * 📑 Çevrimdışı okuma için kararları favorilere kaydetme (internetsiz erişim)
+  * 📋 Standart hukuk atıf formatında tek tıkla kopyalama ve paylaşma
+  * 🎙️ Türkçe sesle arama desteği
+
+#### 2. Claude Mobil / ChatGPT Mobil Entegrasyonu
+* **Claude iOS/Android:** Claude Desktop veya Web üzerinde Remote MCP URL'si (`https://yargimcp.fastmcp.app/mcp`) eklendiğinde, hesabınız üzerinden mobil Claude sohbetlerinizde Türk hukuk sorgulamaları yapabilirsiniz.
+* **ChatGPT (Custom GPT / Actions):** Sunucunun REST API şeması ChatGPT Custom GPT Action olarak eklenerek ChatGPT mobil uygulamasında doğrudan kullanılabilir.
+
 > 💡 **İpucu:** Remote MCP sayesinde Python, uv veya herhangi bir kurulum yapmadan doğrudan Claude Desktop üzerinden Türk hukuk kaynaklarına erişebilirsiniz!
 
 ---

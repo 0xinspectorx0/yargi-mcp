@@ -208,6 +208,7 @@ mcp_quick_test_*.json
 
 # General text files (temporary notes, etc)
 *.txt
+!requirements.txt
 analyze_playwright_mcp.py
 measure_mcp_directly.py
 playwright_mcp_overhead.json

@@ -15,7 +15,8 @@ import logging
 import json
 from datetime import datetime, timedelta
 from fastapi import FastAPI, Request, HTTPException, Query
-from fastapi.responses import JSONResponse, HTMLResponse, Response
+from fastapi.responses import JSONResponse, HTMLResponse, Response, FileResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.exception_handlers import http_exception_handler
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
@@ -23,6 +24,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 
 # Import the proper create_app function that includes all middleware
 from mcp_server_main import create_app
+from mobile_app.api import router as mobile_app_router
 
 # Conditional auth-related imports (only if auth enabled)
 _auth_check = os.getenv("ENABLE_AUTH", "false").lower() == "true"
@@ -141,6 +143,14 @@ if stripe_router:
 if mcp_auth_router:
     app.include_router(mcp_auth_router)
 
+# Include Mobile Web App API router
+app.include_router(mobile_app_router)
+
+# Mount static files for Mobile PWA
+_static_dir = os.path.join(os.path.dirname(__file__), "mobile_app", "static")
+if os.path.exists(_static_dir):
+    app.mount("/static", StaticFiles(directory=_static_dir), name="static")
+
 # Custom 401 exception handler for MCP spec compliance
 @app.exception_handler(401)
 async def custom_401_handler(request: Request, exc: HTTPException):
@@ -257,14 +267,19 @@ async def clerk_cors_proxy(request: Request, path: str):
             headers={"Access-Control-Allow-Origin": "*"}
         )
 
-# FastAPI root endpoint
-@app.get("/")
-async def root():
-    """Root endpoint with service information"""
+# Service metadata information endpoint (JSON)
+@app.get("/api/info")
+async def api_info():
+    """Service metadata information (JSON)"""
     return {
-        "service": "Yargı MCP Server",
-        "description": "MCP server for Turkish legal databases with OAuth authentication",
+        "service": "Yargı MCP Server & Mobil Web",
+        "description": "MCP server and Mobile Web application for Turkish legal databases",
         "endpoints": {
+            "mobile_app": "/",
+            "api_search": "/api/mobile/search",
+            "api_courts": "/api/mobile/courts",
+            "api_decision": "/api/mobile/decision/{doc_id}",
+            "api_summary": "/api/mobile/ai-summary",
             "mcp": "/mcp",
             "health": "/health",
             "status": "/status",
@@ -298,6 +313,29 @@ async def root():
             "flow": "authorization_code"
         }
     }
+
+# FastAPI root endpoint - serves Mobile PWA or JSON metadata
+@app.api_route("/", methods=["GET", "HEAD"])
+async def root(request: Request):
+    """Root endpoint serving Mobile Web PWA or JSON metadata based on request headers"""
+    if request.method == "HEAD":
+        return Response(status_code=200, media_type="text/html; charset=utf-8")
+    accept = request.headers.get("accept", "")
+    if "application/json" in accept and "text/html" not in accept:
+        return await api_info()
+
+    index_file = os.path.join(_static_dir, "index.html")
+    if os.path.exists(index_file):
+        return FileResponse(index_file, media_type="text/html; charset=utf-8")
+    return await api_info()
+
+@app.get("/app")
+async def mobile_app_view():
+    """Explicit endpoint for Mobile Web PWA"""
+    index_file = os.path.join(_static_dir, "index.html")
+    if os.path.exists(index_file):
+        return FileResponse(index_file, media_type="text/html; charset=utf-8")
+    return await api_info()
 
 # OAuth 2.0 Authorization Server Metadata - MCP standard location
 @app.get("/.well-known/oauth-authorization-server")
