@@ -1,29 +1,5 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/mcp/(.*)",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/mcp",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/health",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/app",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/static/(.*)",
-      "destination": "/$1"
-    }
-  ]
+  "framework": "fastapi"
 }

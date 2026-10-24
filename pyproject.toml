@@ -57,6 +57,11 @@ saas = [
 [project.scripts]
 yargi-mcp = "mcp_server_main:main"
 
+[tool.vercel]
+# Let Vercel route the original request path to FastAPI. Do not add a
+# catch-all rewrite to api/index.py: it changes the ASGI path and causes 404s.
+entrypoint = "api.index:app"
+
 [tool.setuptools]
 py-modules = ["mcp_server_main", "mcp_auth_factory", "mcp_auth_http_adapter", "asgi_app", "fastapi_app", "starlette_app", "run_asgi", "stripe_webhook"]
 

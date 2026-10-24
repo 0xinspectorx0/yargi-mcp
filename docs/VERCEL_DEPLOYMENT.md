@@ -24,8 +24,9 @@ Projeyi kendi GitHub hesabınızda bir repoya aktarın (veya bu repoyu fork/push
 3. GitHub reponuzu listeden seçip **"Import"** butonuna basın.
 
 ### 3. Yapılandırma ve Yayınlama
-- **Framework Preset:** `Other` olarak bırakın (Vercel `api/index.py` ve `vercel.json` dosyasını otomatik olarak algılar).
+- **Framework Preset:** `FastAPI` seçin. Projede `vercel.json` ve `pyproject.toml` içindeki `tool.vercel.entrypoint` ayarı `api.index:app` giriş noktasını tanımlar.
 - **Root Directory:** `./` (Varsayılan).
+- **Önemli:** `/api/*` isteklerini `/api/index.py` dosyasına yönlendiren ek bir catch-all rewrite eklemeyin. Vercel FastAPI istekleri orijinal yollarıyla uygulamaya iletir; böyle bir rewrite `/api/mobile/search` gibi rotaların 404 dönmesine neden olabilir.
 - **Environment Variables (Opsiyonel):**
   - `ALLOWED_ORIGINS`: `*`
   - `LOG_LEVEL`: `info`
