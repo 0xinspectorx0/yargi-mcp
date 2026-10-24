@@ -24,6 +24,11 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/mobile", tags=["Mobile App API"])
 
+# Keep the upstream request below the serverless execution limit. If the
+# official service is slow or unreachable, the endpoint can still return the
+# local archive instead of turning into a gateway timeout in the browser.
+LIVE_API_TIMEOUT_SECONDS = 5.0
+
 # Pydantic models for mobile API
 class AISummaryRequest(BaseModel):
     doc_id: str = Field(..., description="Decision Document ID")
@@ -162,6 +167,7 @@ async def search_decisions(
 
     # First attempt: If bedesten client is available and court is compatible, try live query
     if BEDESTEN_AVAILABLE and court in ["ALL", "YARGITAY", "DANISTAY"]:
+        client = None
         try:
             # Map court to bedesten itemTypeList
             court_map = {
@@ -171,7 +177,7 @@ async def search_decisions(
             }
             item_types = court_map.get(court, ["YARGITAYKARARI"])
             
-            client = BedestenApiClient()
+            client = BedestenApiClient(request_timeout=LIVE_API_TIMEOUT_SECONDS)
             data = BedestenSearchData(
                 phrase=q,
                 pageSize=page_size,
@@ -182,8 +188,10 @@ async def search_decisions(
                 kararTarihiEnd=date_end
             )
             req = BedestenSearchRequest(data=data)
-            resp = await client.search_documents(req)
-            await client.close_client_session()
+            resp = await asyncio.wait_for(
+                client.search_documents(req),
+                timeout=LIVE_API_TIMEOUT_SECONDS
+            )
 
             if resp and resp.data and resp.data.items:
                 results = []
@@ -213,6 +221,12 @@ async def search_decisions(
                 }
         except Exception as e:
             logger.info(f"Live API unavailable in current environment ({type(e).__name__}), using rich offline/demo database: {e}")
+        finally:
+            if client is not None:
+                try:
+                    await client.close_client_session()
+                except Exception as close_error:
+                    logger.debug(f"Bedesten client cleanup failed: {close_error}")
 
     # Fallback / Offline / Demo database
     mock_results = search_legal_mock(
