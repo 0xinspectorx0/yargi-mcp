@@ -13,9 +13,10 @@ import os
 import time
 import logging
 import json
+from typing import Optional, List, Dict, Any
 from datetime import datetime, timedelta
 from fastapi import FastAPI, Request, HTTPException, Query
-from fastapi.responses import JSONResponse, HTMLResponse, Response, FileResponse
+from fastapi.responses import JSONResponse, HTMLResponse, Response, FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.exception_handlers import http_exception_handler
 from starlette.middleware import Middleware
@@ -146,10 +147,20 @@ if mcp_auth_router:
 # Include Mobile Web App API router
 app.include_router(mobile_app_router)
 
-# Mount static files for Mobile PWA
+# Mount static files for Mobile PWA (check both public/ and mobile_app/static/)
+_public_dir = os.path.join(os.path.dirname(__file__), "public")
 _static_dir = os.path.join(os.path.dirname(__file__), "mobile_app", "static")
-if os.path.exists(_static_dir):
+
+# Mount /static
+if os.path.exists(_public_dir):
+    app.mount("/static", StaticFiles(directory=_public_dir), name="static")
+elif os.path.exists(_static_dir):
     app.mount("/static", StaticFiles(directory=_static_dir), name="static")
+
+# Mount /icons
+_icons_dir = os.path.join(_public_dir, "icons") if os.path.exists(os.path.join(_public_dir, "icons")) else os.path.join(_static_dir, "icons")
+if os.path.exists(_icons_dir):
+    app.mount("/icons", StaticFiles(directory=_icons_dir), name="icons")
 
 # Custom 401 exception handler for MCP spec compliance
 @app.exception_handler(401)
@@ -314,6 +325,47 @@ async def api_info():
         }
     }
 
+def _find_static_file(filename: str) -> Optional[str]:
+    """Find static file in public/ or mobile_app/static/"""
+    candidates = [
+        os.path.join(_public_dir, filename),
+        os.path.join(_static_dir, filename),
+        os.path.join(os.path.dirname(__file__), filename)
+    ]
+    for c in candidates:
+        if os.path.exists(c):
+            return c
+    return None
+
+# Static asset routes for direct root requests
+@app.get("/manifest.json")
+async def manifest_endpoint():
+    f = _find_static_file("manifest.json")
+    if f:
+        return FileResponse(f, media_type="application/manifest+json")
+    raise HTTPException(status_code=404, detail="manifest.json not found")
+
+@app.get("/sw.js")
+async def sw_endpoint():
+    f = _find_static_file("sw.js")
+    if f:
+        return FileResponse(f, media_type="application/javascript")
+    raise HTTPException(status_code=404, detail="sw.js not found")
+
+@app.get("/style.css")
+async def style_endpoint():
+    f = _find_static_file("style.css")
+    if f:
+        return FileResponse(f, media_type="text/css; charset=utf-8")
+    raise HTTPException(status_code=404, detail="style.css not found")
+
+@app.get("/app.js")
+async def app_js_endpoint():
+    f = _find_static_file("app.js")
+    if f:
+        return FileResponse(f, media_type="application/javascript; charset=utf-8")
+    raise HTTPException(status_code=404, detail="app.js not found")
+
 # FastAPI root endpoint - serves Mobile PWA or JSON metadata
 @app.api_route("/", methods=["GET", "HEAD"])
 async def root(request: Request):
@@ -321,21 +373,36 @@ async def root(request: Request):
     if request.method == "HEAD":
         return Response(status_code=200, media_type="text/html; charset=utf-8")
     accept = request.headers.get("accept", "")
+    # Only return JSON if explicitly requested by client without HTML
     if "application/json" in accept and "text/html" not in accept:
         return await api_info()
 
-    index_file = os.path.join(_static_dir, "index.html")
-    if os.path.exists(index_file):
+    index_file = _find_static_file("index.html")
+    if index_file and os.path.exists(index_file):
         return FileResponse(index_file, media_type="text/html; charset=utf-8")
-    return await api_info()
+    
+    # If HTML is expected but file was not found, return HTML (never trigger JSON download)
+    return HTMLResponse(
+        content="""<!DOCTYPE html>
+<html lang="tr">
+<head><meta charset="UTF-8"><title>Yargı MCP Mobil</title></head>
+<body style="font-family:sans-serif; text-align:center; padding:50px;">
+  <h1>⚖️ Yargı MCP Mobil</h1>
+  <p>Mobil web uygulaması yükleniyor...</p>
+  <p><a href="/api/info">API Bilgisi</a> | <a href="/mcp">MCP Endpoint</a></p>
+</body>
+</html>""",
+        status_code=200,
+        media_type="text/html; charset=utf-8"
+    )
 
 @app.get("/app")
 async def mobile_app_view():
     """Explicit endpoint for Mobile Web PWA"""
-    index_file = os.path.join(_static_dir, "index.html")
-    if os.path.exists(index_file):
+    index_file = _find_static_file("index.html")
+    if index_file and os.path.exists(index_file):
         return FileResponse(index_file, media_type="text/html; charset=utf-8")
-    return await api_info()
+    return RedirectResponse(url="/")
 
 # OAuth 2.0 Authorization Server Metadata - MCP standard location
 @app.get("/.well-known/oauth-authorization-server")

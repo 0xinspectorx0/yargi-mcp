@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+  <title>Yargı MCP Mobil - Türk Hukuk Kaynakları</title>
+  
+  <!-- PWA & Mobile Meta Tags -->
+  <meta name="theme-color" content="#0f172a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Yargı MCP">
+  <meta name="description" content="Yargıtay, Danıştay, Anayasa Mahkemesi ve Türk Hukuk Kaynaklarında Hızlı Karar Arama ve İnceleme">
+  
+  <!-- App Icons & Manifest -->
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/png" href="/icons/favicon.png">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  
+  <!-- CSS Stylesheet (support both root and /static) -->
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+  <!-- TOP NAVBAR -->
+  <header class="navbar">
+    <a href="#" class="brand" id="brand-home-btn">
+      <div class="brand-icon">⚖️</div>
+      <div class="brand-title">
+        <h1>Yargı <span class="gold">MCP</span></h1>
+        <span class="tagline">Türk Hukuk Arama</span>
+      </div>
+    </a>
+    <div class="nav-actions">
+      <button class="nav-btn" id="theme-toggle-btn" aria-label="Tema Değiştir" title="Açık/Koyu Tema">
+        🌓
+      </button>
+      <button class="nav-btn" id="bookmarks-nav-btn" aria-label="Kaydedilen Kararlar" title="Favoriler">
+        📑
+        <span class="badge-count" id="bookmark-badge" style="display:none;">0</span>
+      </button>
+      <button class="nav-btn" id="guide-nav-btn" aria-label="Mobil Kurulum Rehberi" title="Mobilde Kullanım Rehberi">
+        📱
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="container">
+
+    <!-- PWA INSTALL PROMPT BANNER -->
+    <div class="install-banner" id="pwa-install-banner">
+      <div class="install-text">
+        <h3>📲 Yargı MCP'yi Telefona Ekleyin</h3>
+        <p>Hızlı ve reklamsız yerel mobil uygulama deneyimi</p>
+      </div>
+      <button class="btn-install" id="pwa-install-btn">Uygulamayı Ekle</button>
+    </div>
+
+    <!-- SEARCH CARD -->
+    <section class="search-card">
+      <form id="search-form" class="search-box">
+        <span class="search-icon-left">🔍</span>
+        <input 
+          type="text" 
+          id="search-input" 
+          class="search-input" 
+          placeholder="Karar, konu, kanun veya esas no ara..." 
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
+          enterkeyhint="search"
+          required
+        >
+        <button type="button" class="search-action-btn" id="voice-search-btn" title="Sesle Ara" style="display:none;">
+          🎙️
+        </button>
+        <button type="button" class="search-action-btn" id="clear-search-btn" title="Temizle" style="display:none;">
+          ✕
+        </button>
+        <button type="submit" class="btn-search-submit">
+          <span>Ara</span>
+        </button>
+      </form>
+
+      <!-- SEARCH CONTROLS ROW -->
+      <div class="search-controls">
+        <button type="button" class="filter-btn-trigger" id="open-filter-btn">
+          <span>⚙️ Filtreler</span>
+          <span class="filter-active-indicator" id="filter-indicator" style="display:none;"></span>
+        </button>
+        <span id="active-court-label">Tüm Mahkemeler</span>
+      </div>
+    </section>
+
+    <!-- COURT TABS (HORIZONTAL SCROLL) -->
+    <section class="court-scroll-container" id="court-tabs">
+      <button class="court-chip active" data-court="ALL">⚖️ Tümü</button>
+      <button class="court-chip" data-court="YARGITAY">🏛️ Yargıtay</button>
+      <button class="court-chip" data-court="DANISTAY">📜 Danıştay</button>
+      <button class="court-chip" data-court="ANAYASA">⚖️ Anayasa Mahk.</button>
+      <button class="court-chip" data-court="EMSAL">📋 Emsal (UYAP)</button>
+      <button class="court-chip" data-court="KIK">📑 KİK</button>
+      <button class="court-chip" data-court="REKABET">🏢 Rekabet</button>
+      <button class="court-chip" data-court="SAYISTAY">📊 Sayıştay</button>
+      <button class="court-chip" data-court="KVKK">🔒 KVKK / BDDK</button>
+    </section>
+
+    <!-- POPULAR SEARCH SUGGESTIONS -->
+    <section class="suggestions-wrap">
+      <span class="suggestions-title">Popüler Aramalar</span>
+      <button class="chip-tag" data-query="işe iade davası">işe iade davası</button>
+      <button class="chip-tag" data-query="kira bedeli tespiti">kira tespiti</button>
+      <button class="chip-tag" data-query="kıdem ve ihbar tazminatı">kıdem tazminatı</button>
+      <button class="chip-tag" data-query="boşanma ziynet eşyası">ziynet eşyası</button>
+      <button class="chip-tag" data-query="araç değer kaybı tazminatı">değer kaybı</button>
+      <button class="chip-tag" data-query="mülkiyet hakkı ihlali">mülkiyet hakkı</button>
+      <button class="chip-tag" data-query="imar planı iptali">imar planı</button>
+      <button class="chip-tag" data-query="aşırı düşük teklif">aşırı düşük teklif</button>
+    </section>
+
+    <!-- RESULTS SECTION -->
+    <section class="results-section">
+      <div class="results-header" id="results-header" style="display:none;">
+        <span class="results-count" id="results-count-text">0 karar bulundu</span>
+        <span id="results-source-tag"></span>
+      </div>
+
+      <!-- LOADING SPINNER -->
+      <div class="state-box" id="loading-box" style="display:none;">
+        <div class="spinner"></div>
+        <div class="state-title">Yargı kararları taranıyor...</div>
+        <div class="state-desc">Resmi yargı veritabanları ve içtihatlar sorgulanıyor</div>
+      </div>
+
+      <!-- RESULTS LIST -->
+      <div class="results-list" id="results-list">
+        <!-- Default State when no search done -->
+        <div class="state-box" id="initial-state-box">
+          <div class="state-icon">⚖️</div>
+          <div class="state-title">Hukuki Arama Başlatın</div>
+          <div class="state-desc">Yukarıdaki arama çubuğunu veya popüler etiketleri kullanarak Yargıtay, Danıştay, AYM ve emsal kararları anında sorgulayabilirsiniz.</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- BOTTOM NAVIGATION -->
+  <nav class="bottom-nav">
+    <button class="bottom-nav-item active" id="bnav-search">
+      <span class="nav-icon">🔍</span>
+      <span>Arama</span>
+    </button>
+    <button class="bottom-nav-item" id="bnav-bookmarks">
+      <span class="nav-icon">📑</span>
+      <span>Kaydedilenler</span>
+    </button>
+    <button class="bottom-nav-item" id="bnav-filter">
+      <span class="nav-icon">⚙️</span>
+      <span>Filtreler</span>
+    </button>
+    <button class="bottom-nav-item" id="bnav-guide">
+      <span class="nav-icon">📱</span>
+      <span>Mobil Kurulum</span>
+    </button>
+  </nav>
+
+  <!-- FILTER BOTTOM SHEET MODAL -->
+  <div class="modal-overlay" id="filter-modal">
+    <div class="bottom-sheet">
+      <div class="sheet-drag-handle"></div>
+      <div class="sheet-header">
+        <div class="sheet-title">⚙️ Arama Filtreleri</div>
+        <button class="sheet-close-btn" id="close-filter-modal-btn">✕</button>
+      </div>
+      <div class="sheet-body">
+        <div class="filter-group">
+          <label class="filter-label">Yargı Mercii / Mahkeme</label>
+          <select id="filter-court-select" class="filter-select">
+            <option value="ALL">Tüm Mahkemeler</option>
+            <option value="YARGITAY">Yargıtay (Adli Temyiz)</option>
+            <option value="DANISTAY">Danıştay (İdari Temyiz)</option>
+            <option value="ANAYASA">Anayasa Mahkemesi (Norm / Bireysel)</option>
+            <option value="EMSAL">Emsal Kararlar (BAM / İlk Derece)</option>
+            <option value="KIK">Kamu İhale Kurulu (KİK)</option>
+            <option value="REKABET">Rekabet Kurumu</option>
+            <option value="SAYISTAY">Sayıştay</option>
+            <option value="KVKK">KVKK / BDDK</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">Daire / Kurul Seçimi</label>
+          <select id="filter-daire-select" class="filter-select">
+            <option value="ALL">Tüm Daireler / Kurullar</option>
+            <option value="H1">1. Hukuk Dairesi (Tapu İptali / Tescil, Muris Muvazaası)</option>
+            <option value="H2">2. Hukuk Dairesi (Aile Hukuku, Boşanma, Ziynet)</option>
+            <option value="H3">3. Hukuk Dairesi (Kira Hukuku, Tahliye)</option>
+            <option value="H4">4. Hukuk Dairesi (Trafik Kazası, Değer Kaybı)</option>
+            <option value="H9">9. Hukuk Dairesi (İş Hukuku, İşe İade, Kıdem)</option>
+            <option value="H11">11. Hukuk Dairesi (Ticaret Hukuku, Şirketler)</option>
+            <option value="HGK">Hukuk Genel Kurulu (HGK Emsalleri)</option>
+            <option value="D6">Danıştay 6. Daire (İmar & Kamulaştırma)</option>
+            <option value="D12">Danıştay 12. Daire (Devlet Memurları)</option>
+            <option value="IDDK">İdari Dava Daireleri Kurulu (İDDK)</option>
+          </select>
+        </div>
+
+        <div class="filter-row">
+          <div class="filter-group">
+            <label class="filter-label">Başlangıç Tarihi</label>
+            <input type="date" id="filter-date-start" class="filter-input">
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Bitiş Tarihi</label>
+            <input type="date" id="filter-date-end" class="filter-input">
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:8px;">
+          <button type="button" class="btn-card" id="filter-reset-btn" style="flex:1; justify-content:center;">
+            Temizle
+          </button>
+          <button type="button" class="btn-card btn-read-main" id="filter-apply-btn" style="flex:2; justify-content:center;">
+            Filtreleri Uygula
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOOKMARKS MODAL -->
+  <div class="modal-overlay" id="bookmarks-modal">
+    <div class="bottom-sheet">
+      <div class="sheet-drag-handle"></div>
+      <div class="sheet-header">
+        <div class="sheet-title">📑 Kaydedilen Kararlar (Çevrimdışı)</div>
+        <button class="sheet-close-btn" id="close-bookmarks-modal-btn">✕</button>
+      </div>
+      <div class="sheet-body" id="bookmarks-list">
+        <div class="state-box">
+          <div class="state-icon">📑</div>
+          <div class="state-title">Henüz Karar Kaydetmediniz</div>
+          <div class="state-desc">Arama sonuçlarındaki "Kaydet" butonuna basarak kararları favorilere ekleyebilir, internetsiz ortamda dahi okuyabilirsiniz.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOBILE INSTALL & MCP GUIDE MODAL -->
+  <div class="modal-overlay" id="guide-modal">
+    <div class="bottom-sheet">
+      <div class="sheet-drag-handle"></div>
+      <div class="sheet-header">
+        <div class="sheet-title">📱 Mobil Kullanım & Kurulum Rehberi</div>
+        <button class="sheet-close-btn" id="close-guide-modal-btn">✕</button>
+      </div>
+      <div class="sheet-body">
+        
+        <!-- SECTION 1: ADD TO HOME SCREEN -->
+        <div class="ai-card">
+          <div class="ai-card-title">📲 1. Telefona Uygulama Olarak Ekleme (PWA)</div>
+          <div class="ai-card-body">
+            <strong>iOS (iPhone / iPad) Safari:</strong><br>
+            1. Safari'nin altındaki <strong>Paylaş</strong> simgesine (kare içinde yukarı ok) dokunun.<br>
+            2. Aşağı kaydırıp <strong>"Ana Ekrana Ekle"</strong> seçeneğini seçin.<br>
+            3. Sağ üstteki <strong>"Ekle"</strong> butonuna basın. Uygulama telefonunuzun ana ekranında yerel bir app gibi çalışacaktır!<br><br>
+            <strong>Android (Google Chrome):</strong><br>
+            1. Chrome'un sağ üst köşesindeki <strong>üç nokta</strong> menüsüne dokunun.<br>
+            2. <strong>"Ana Ekrana Ekle"</strong> veya <strong>"Uygulamayı Yükle"</strong> butonuna basın.
+          </div>
+        </div>
+
+        <!-- SECTION 2: CLAUDE MOBILE MCP SETUP -->
+        <div class="ai-card">
+          <div class="ai-card-title">🤖 2. Claude Mobil Uygulamasında Kullanma</div>
+          <div class="ai-card-body">
+            Yargı MCP'nin Remote MCP sunucusu sayesinde bilgisayar kurulumu yapmadan doğrudan LLM istemcilerine bağlanabilirsiniz:<br><br>
+            🔗 <strong>Remote MCP URL:</strong><br>
+            <code style="background:var(--bg-primary); padding:6px 10px; border-radius:6px; display:block; margin:6px 0; word-break:break-all; color:var(--accent-gold);">https://yargimcp.fastmcp.app/mcp</code>
+            <br>
+            <strong>Claude Desktop / Web:</strong><br>
+            Claude masaüstü veya web üzerinden <em>Settings → Connectors → Add Custom Connector</em> adımından yukarıdaki URL'yi eklediğinizde, telefonunuzdaki Claude uygulamasında aynı sohbet oturumu üzerinden Yargı MCP araçları kullanılabilir hale gelir.
+          </div>
+        </div>
+
+        <!-- SECTION 3: CHATGPT MOBILE SETUP -->
+        <div class="ai-card">
+          <div class="ai-card-title">💬 3. ChatGPT Mobil ile Kullanma (Custom GPT)</div>
+          <div class="ai-card-body">
+            ChatGPT Plus/Team/Pro kullanıcıları, Yargı MCP'nin REST API şemasını bir <strong>Özel GPT (Custom GPT) Action</strong> olarak ekleyebilir. Böylece ChatGPT iOS/Android mobil uygulamasında "Yargıtay kararlarını ara" diyerek doğrudan kararları sorgulayabilirsiniz.
+          </div>
+        </div>
+
+        <button type="button" class="btn-card btn-read-main" id="guide-ok-btn" style="justify-content:center; padding:12px;">
+          Anladım, Kapat
+        </button>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- DECISION READER MODAL (FULLSCREEN) -->
+  <div class="reader-modal" id="reader-modal">
+    <div class="reader-navbar">
+      <div class="reader-nav-group">
+        <button class="reader-btn" id="reader-back-btn">
+          <span>← Kapat</span>
+        </button>
+      </div>
+      <div class="reader-nav-group">
+        <button class="reader-btn" id="reader-font-dec-btn" title="Yazıyı Küçült">A-</button>
+        <button class="reader-btn" id="reader-font-inc-btn" title="Yazıyı Büyüt">A+</button>
+        <button class="reader-btn" id="reader-font-family-btn" title="Yazı Tipini Değiştir">Serif</button>
+        <button class="reader-btn btn-read-main" id="reader-copy-citation-btn" title="Hukuki Atıf Formatında Kopyala">
+          📋 Atıf
+        </button>
+      </div>
+    </div>
+
+    <!-- TABS: KARAR METNİ / AI ANALİZİ -->
+    <div class="reader-tabs">
+      <button class="reader-tab-btn active" id="tab-btn-text">
+        <span>📜 Gerekçeli Karar Metni</span>
+      </button>
+      <button class="reader-tab-btn" id="tab-btn-ai">
+        <span>🤖 AI Karar Analizi & Özeti</span>
+      </button>
+    </div>
+
+    <div class="reader-content" id="reader-content-text">
+      <div class="reader-text" id="reader-text-body"></div>
+    </div>
+
+    <div class="reader-content" id="reader-content-ai" style="display:none;">
+      <div class="ai-summary-container" id="ai-summary-body">
+        <div class="state-box">
+          <div class="spinner"></div>
+          <div class="state-title">Yapay Zeka Kararı Analiz Ediyor...</div>
+          <div class="state-desc">Dava konusu, hukuki uyuşmazlık, mahkeme gerekçesi ve hüküm sonucu çıkarılıyor.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div class="toast" id="toast">
+    <span id="toast-message">İşlem tamamlandı</span>
+  </div>
+
+  <!-- Application Script (try root first, fallback to /static) -->
+  <script src="/app.js"></script>
+  <script>
+    if (!window.yargiLoaded && typeof init === 'undefined') {
+      const s = document.createElement('script');
+      s.src = '/static/app.js';
+      document.body.appendChild(s);
+    }
+  </script>
+</body>
+</html>

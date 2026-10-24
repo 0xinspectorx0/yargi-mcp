@@ -150,8 +150,10 @@
   function setupPWA() {
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/static/sw.js').catch((err) => {
-          console.log('SW registration error:', err);
+        navigator.serviceWorker.register('/sw.js').catch(() => {
+          navigator.serviceWorker.register('/static/sw.js').catch((err) => {
+            console.log('SW registration error:', err);
+          });
         });
       });
     }

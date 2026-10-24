@@ -161,7 +161,6 @@ cython_debug/
 .DS_Store
 hello.py
 
-*.html
 fast-mcp-docs.md
 
 # Debug and test files
