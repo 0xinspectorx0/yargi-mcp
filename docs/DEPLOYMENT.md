@@ -133,6 +133,14 @@ sudo systemctl start yargi-mcp
 
 ## Cloud Dağıtımı
 
+### Vercel (Mobil Web & Serverless API)
+
+Vercel ile ücretsiz, otomatik HTTPS'li ve mobil PWA uyumlu yayınlama yapabilirsiniz:
+
+1. Projede `vercel.json` ve `api/index.py` yapılandırması hazırdır.
+2. [vercel.com](https://vercel.com) üzerinden GitHub reponuzu **Import** edin.
+3. Detaylı rehber için [Vercel Dağıtım Rehberi](VERCEL_DEPLOYMENT.md) dokümanına bakın.
+
 ### Heroku
 
 1. `Procfile` oluşturun:
